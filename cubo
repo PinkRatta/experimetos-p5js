@@ -1,0 +1,53 @@
+let velocidadX = 0;
+let velocidadY = 0;
+let colorActual, colorDestino;
+let tiempoCambio = 0;
+let duracionCambio = 200; // Duración en fotogramas (~3.3 segundos a 60fps)
+
+function setup() {
+  createCanvas(600, 400, WEBGL);
+  colorActual = color(random(255), random(255), random(255));
+  colorDestino = color(random(255), random(255), random(255));
+}
+
+function draw() {
+  background(0);
+  
+  // Luz direccional con cambio suave
+  directionalLight(
+    lerp(red(colorActual), red(colorDestino), tiempoCambio / duracionCambio),
+    lerp(green(colorActual), green(colorDestino), tiempoCambio / duracionCambio),
+    lerp(blue(colorActual), blue(colorDestino), tiempoCambio / duracionCambio),
+    0, 0, -1
+  );
+  
+  // Material dinámico con transición de color
+  specularMaterial(
+    lerp(red(colorActual), red(colorDestino), tiempoCambio / duracionCambio),
+    lerp(green(colorActual), green(colorDestino), tiempoCambio / duracionCambio),
+    lerp(blue(colorActual), blue(colorDestino), tiempoCambio / duracionCambio)
+  );
+  
+  // Aplicar rotación según velocidad
+  rotateX(frameCount * 0.01 + velocidadY);
+  rotateY(frameCount * 0.01 + velocidadX);
+  
+  // Dibujar el cubo
+  box(100);
+  
+  // Incrementar el tiempo de transición
+  tiempoCambio++;
+  
+  // Si alcanza el tiempo máximo, cambiar colores y reiniciar contador
+  if (tiempoCambio >= duracionCambio) {
+    tiempoCambio = 0;
+    colorActual = colorDestino;
+    colorDestino = color(random(255), random(255), random(255));
+  }
+}
+
+function mousePressed() {
+  // Cambiar la velocidad según la distancia del mouse al centro
+  velocidadX = (mouseX - width / 2) * 0.0005;
+  velocidadY = (mouseY - height / 2) * 0.0005;
+}
